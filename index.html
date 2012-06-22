@@ -1,0 +1,162 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Api taster by fredwu</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Api taster</h1>
+        <p>A quick and easy way to visually test out your Rails application's API.</p>
+        <p class="view"><a href="https://github.com/fredwu/api_taster">View the Project on GitHub <small>fredwu/api_taster</small></a></p>
+        <ul>
+          <li><a href="https://github.com/fredwu/api_taster/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/fredwu/api_taster/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/fredwu/api_taster">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>ApiTaster <a href="http://travis-ci.org/fredwu/api_taster"><img src="https://secure.travis-ci.org/fredwu/api_taster.png?branch=master" alt="Build Status"></a> <a href="https://gemnasium.com/fredwu/api_taster"><img src="https://gemnasium.com/fredwu/api_taster.png" alt="Dependency Status"></a>
+</h1>
+
+<p>A quick and easy way to visually test out your Rails application's API.</p>
+
+<p><img src="http://i.imgur.com/8Dnto.png" alt=""></p>
+
+<h2>Why?</h2>
+
+<p>There are already many awesome API clients (such as <a href="https://chrome.google.com/webstore/detail/fdmmgilgnpjigdojojpjoooidkmcomcm">Postman</a>), so why reinvent the wheel?</p>
+
+<p>API Taster compared to alternatives, have the following advantages:</p>
+
+<ul>
+<li>API endpoints are automatically generated from your Rails routes definition</li>
+<li>Defining post params is as easy as defining routes</li>
+<li>Post params can be shared with your test factories</li>
+</ul><h2>Usage</h2>
+
+<p>Add API Taster in your gemfile:</p>
+
+<div class="highlight">
+<pre><span class="n">gem</span> <span class="s1">'api_taster'</span><span class="p">,</span> <span class="ss">:group</span> <span class="o">=&gt;</span> <span class="ss">:development</span>
+</pre>
+</div>
+
+
+<p>Mount API Taster, this will allow you to visit API Taster from within your app. For example:</p>
+
+<div class="highlight">
+<pre><span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">routes</span><span class="o">.</span><span class="n">draw</span> <span class="k">do</span>
+  <span class="n">mount</span> <span class="no">ApiTaster</span><span class="o">::</span><span class="no">Engine</span> <span class="o">=&gt;</span> <span class="s2">"/api_taster"</span> <span class="k">if</span> <span class="no">Rails</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">development?</span>
+<span class="k">end</span>
+</pre>
+</div>
+
+
+<p>Add API Taster into the autoload paths in <code>development.rb</code>:</p>
+
+<div class="highlight">
+<pre><span class="n">config</span><span class="o">.</span><span class="n">autoload_paths</span> <span class="o">+=</span> <span class="sx">%W(</span>
+<span class="sx">  </span><span class="si">#{</span><span class="no">ApiTaster</span><span class="o">::</span><span class="no">Engine</span><span class="o">.</span><span class="n">root</span><span class="si">}</span><span class="sx"></span>
+<span class="sx">)</span>
+</pre>
+</div>
+
+
+<p>In <code>routes.rb</code>, define parameters for each API endpoint after the normal routes definition block. For example:</p>
+
+<div class="highlight">
+<pre><span class="k">if</span> <span class="no">Rails</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">development?</span>
+  <span class="no">ApiTaster</span><span class="o">.</span><span class="n">routes</span> <span class="k">do</span>
+    <span class="n">get</span> <span class="s1">'/users'</span>
+
+    <span class="n">post</span> <span class="s1">'/users'</span><span class="p">,</span> <span class="p">{</span>
+      <span class="ss">:user</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s1">'Fred'</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="n">get</span> <span class="s1">'/users/:id'</span><span class="p">,</span> <span class="p">{</span>
+      <span class="ss">:id</span> <span class="o">=&gt;</span> <span class="mi">1</span>
+    <span class="p">}</span>
+
+    <span class="n">put</span> <span class="s1">'/users/:id'</span><span class="p">,</span> <span class="p">{</span>
+      <span class="ss">:id</span> <span class="o">=&gt;</span> <span class="mi">1</span><span class="p">,</span> <span class="ss">:user</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s1">'Awesome'</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="n">delete</span> <span class="s1">'/users/:id'</span><span class="p">,</span> <span class="p">{</span>
+      <span class="ss">:id</span> <span class="o">=&gt;</span> <span class="mi">1</span>
+    <span class="p">}</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre>
+</div>
+
+
+<h3>Share Params with Test Factories</h3>
+
+<p>If you use a test factory such as <a href="https://github.com/thoughtbot/factory_girl">FactoryGirl</a>, you can require your test factories and share the params. For example in FactoryGirl you can use the <code>attributes_for(:name_of_factory)</code> method.</p>
+
+<h3>Missing Route Definitions Detection</h3>
+
+<p>Instead of manually finding out which route definitions you need, API Taster provides a warning page that shows you all the missing definitions.</p>
+
+<p><img src="http://i.imgur.com/vZb93.png" alt=""></p>
+
+<h3>Obsolete / Mismatched Route Definitions Detection</h3>
+
+<p>APIs evolve - especially during the development stage. To keep <code>ApiTaster.routes</code> in sync with your route definitions, API Taster provides a warning page that shows you the definitions that are obsolete/mismatched therefore you could correct or remove them.</p>
+
+<p><img src="http://i.imgur.com/qK7g5.png" alt=""></p>
+
+<h3>Use with an Engine</h3>
+
+<p>Rails Engines are largely self contained and separated from your main app. Therefore, to use API Taster with an Engine, you would need some extra efforts:</p>
+
+<p>In your app Gemfile, you would also need:</p>
+
+<div class="highlight">
+<pre><span class="n">gem</span> <span class="s2">"jquery-rails"</span>
+<span class="n">gem</span> <span class="s2">"bootstrap-sass"</span>
+</pre>
+</div>
+
+
+<p>If you are hand-picking Rails components, make sure in your <code>application.rb</code> you have Sprockets enabled:</p>
+
+<div class="highlight">
+<pre><span class="nb">require</span> <span class="s2">"sprockets/railtie"</span>
+</pre>
+</div>
+
+
+<h2>License</h2>
+
+<p>This gem is released under the <a href="http://www.opensource.org/licenses/mit-license.php">MIT License</a>.</p>
+
+<h2>Author</h2>
+
+<p><a href="https://github.com/fredwu">Fred Wu</a>, originally built for <a href="http://locomote.com.au">Locomote</a>.</p>
+      </section>
+    </div>
+    <footer>
+      <p>Project maintained by <a href="https://github.com/fredwu">fredwu</a></p>
+      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
+    </footer>
+    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
+    
+  </body>
+</html>
